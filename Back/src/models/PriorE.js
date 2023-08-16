@@ -1,10 +1,8 @@
 const { DataTypes } = require("sequelize");
-// Exportamos una funcion que define el modelo
-// Luego le injectamos la conexion a sequelize.
+
 module.exports = (sequelize) => {
-  // defino el modelo
   sequelize.define(
-    "Digimon",
+    "PriorE",
     {
       id: {
         type: DataTypes.INTEGER,
@@ -12,24 +10,20 @@ module.exports = (sequelize) => {
         primaryKey: true,
         autoIncrement: true,
       },
-      name: {
+      digimon: {
         type: DataTypes.STRING,
         allowNull: false,
       },
-      xAntibody: {
-        type: DataTypes.BOOLEAN,
-        allowNull: false,
-      },
-      releaseDate: {
+      condition: {
         type: DataTypes.STRING,
         allowNull: false,
       },
-      images: {
-        type: DataTypes.ARRAY(DataTypes.JSON), // Un array de objetos JSON
+      image: {
+        type: DataTypes.STRING,
         allowNull: false,
       },
-      descriptions: {
-        type: DataTypes.ARRAY(DataTypes.JSONB), // Puedes usar JSONB para almacenar objetos JSON
+      url: {
+        type: DataTypes.STRING,
         allowNull: false,
       },
     },
