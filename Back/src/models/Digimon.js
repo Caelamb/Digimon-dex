@@ -18,7 +18,7 @@ module.exports = (sequelize) => {
       },
       xAntibody: {
         type: DataTypes.BOOLEAN,
-        allowNull: false,
+        allowNull: true,
       },
       releaseDate: {
         type: DataTypes.STRING,

@@ -1,5 +1,6 @@
 const axios = require("axios");
 const {
+  Presentacion,
   Digimon,
   Level,
   Type,
@@ -9,24 +10,45 @@ const {
   PriorE,
   NextE,
 } = require("../db");
-const API_URL = "digi-api.com/api/v1/digimon";
+const API_URL = "http://www.digi-api.com/api/v1/digimon";
+
+const DigimonIds = async (digimonId) => {
+  try {
+    const RESPONSE = await axios.get(`${API_URL}/${digimonId}`);
+    const BREED = RESPONSE.data;
+    const DIGIMON_DATA = {
+      id: BREED.id,
+      name: BREED.name,
+      xAntibody: BREED.xAntibody,
+      releaseDate: BREED.releaseDate,
+      images: BREED.images,
+      descriptions: BREED.descriptions,
+    };
+
+    console.log(DIGIMON_DATA);
+
+    await Digimon.bulkCreate(DIGIMON_DATA);
+  } catch (error) {
+    console.error("Error seeding database:", error);
+  }
+};
 
 const seedDatabase = async () => {
   try {
     const RESPONSE = await axios.get(API_URL);
     const BREEDS = RESPONSE.data;
-    const DIGIMON_DATA = BREEDS.map((breed) => {
+    const DIGIMON_DATA = BREEDS.content.map((breeds) => {
       return {
-        id: breed.id,
-        name: breed.name,
-        xAntibody: breed.xAntibody,
-        releaseDate: breed.releaseDate,
-        images: breed.images,
-        descriptions: breed.descriptions,
+        id: breeds.id,
+        name: breeds.name,
+        href: breeds.href,
+        image: breeds.image,
       };
     });
 
-    await Digimon.bulkCreate(DIGIMON_DATA, { ignoreDuplicates: true });
+    await DigimonIds(1);
+
+    await Presentacion.bulkCreate(DIGIMON_DATA);
   } catch (error) {
     console.error("Error seeding database:", error);
   }

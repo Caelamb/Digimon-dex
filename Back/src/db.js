@@ -35,8 +35,17 @@ let capsEntries = entries.map((entry) => [
 ]);
 sequelize.models = Object.fromEntries(capsEntries);
 
-const { Digimon, Level, Type, Attributes, Fields, Skills, PriorE, NextE } =
-  sequelize.models;
+const {
+  Presentacion,
+  Digimon,
+  Level,
+  Type,
+  Attributes,
+  Fields,
+  Skills,
+  PriorE,
+  NextE,
+} = sequelize.models;
 
 Digimon.belongsToMany(NextE, { through: "Digimon_NextE" });
 NextE.belongsToMany(Digimon, { through: "Digimon_NextE" });
@@ -56,8 +65,11 @@ Type.belongsToMany(Digimon, { through: "Digimon_Type" });
 Digimon.belongsToMany(Level, { through: "Digimon_Level" });
 Level.belongsToMany(Digimon, { through: "Digimon_Level" });
 
-Digimon.belongsToMany(Skills, { through: "Digimon_Skilss" });
-Skills.belongsToMany(Digimon, { through: "Digimon_Skilss" });
+Digimon.belongsToMany(Skills, { through: "Digimon_Skills" });
+Skills.belongsToMany(Digimon, { through: "Digimon_Skills" });
+
+Presentacion.belongsToMany(Digimon, { through: "Presentacion_Digimon" });
+Digimon.belongsToMany(Presentacion, { through: "Presentacion_Digimon" });
 
 module.exports = {
   ...sequelize.models, // para poder importar los modelos así: const { Product, User } = require('./db.js');
