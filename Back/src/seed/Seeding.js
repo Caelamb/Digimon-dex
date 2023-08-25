@@ -12,11 +12,23 @@ const {
 } = require("../db");
 const API_URL = "http://www.digi-api.com/api/v1/digimon";
 
+const getDigimonIds = async () => {
+  try {
+    const PAGE_SIZe = 1422;
+    const RESPONSE = await axios.get(`${API_URL}?pageSize=${PAGE_SIZe}`);
+    const BREEDS = RESPONSE.data.content;
+    const digimonIds = BREEDS.map((breeds) => breeds.id);
+    return digimonIds;
+  } catch (error) {
+    console.error("Error getting Digimon IDs:", error);
+  }
+};
+
 const DigimonIds = async (digimonId) => {
   try {
     const RESPONSE = await axios.get(`${API_URL}/${digimonId}`);
     const BREED = RESPONSE.data;
-    const DIGIMON_DATA = {
+    const DIGIMON_ID = {
       id: BREED.id,
       name: BREED.name,
       xAntibody: BREED.xAntibody,
@@ -25,9 +37,7 @@ const DigimonIds = async (digimonId) => {
       descriptions: BREED.descriptions,
     };
 
-    console.log(DIGIMON_DATA);
-
-    await Digimon.bulkCreate(DIGIMON_DATA);
+    await Digimon.create(DIGIMON_ID);
   } catch (error) {
     console.error("Error seeding database:", error);
   }
@@ -35,9 +45,10 @@ const DigimonIds = async (digimonId) => {
 
 const seedDatabase = async () => {
   try {
-    const RESPONSE = await axios.get(API_URL);
-    const BREEDS = RESPONSE.data;
-    const DIGIMON_DATA = BREEDS.content.map((breeds) => {
+    const PAGE_SIZE = 1422;
+    const RESPONSE = await axios.get(`${API_URL}?pageSize=${PAGE_SIZE}`);
+    const BREEDS = RESPONSE.data.content;
+    const DIGIMON_DATA = BREEDS.map((breeds) => {
       return {
         id: breeds.id,
         name: breeds.name,
@@ -45,13 +56,20 @@ const seedDatabase = async () => {
         image: breeds.image,
       };
     });
+    await Presentacion.bulkCreate(DIGIMON_DATA, { ignoreDuplicates: true });
 
-    await DigimonIds(1);
+    const digimonIds = await getDigimonIds();
 
-    await Presentacion.bulkCreate(DIGIMON_DATA);
+    for (const digimonId of digimonIds) {
+      await DigimonIds(digimonId);
+    }
   } catch (error) {
     console.error("Error seeding database:", error);
   }
 };
 
 module.exports = { seedDatabase };
+
+// for (const digimon of DIGIMON_ID) {
+//   await DigimonIds(digimon.id);
+// }
